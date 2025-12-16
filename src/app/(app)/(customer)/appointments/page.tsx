@@ -42,7 +42,7 @@ export default function AppointmentsPage() {
   const handleCancel = async (id: string) => {
     if (!confirm("Are you sure you want to cancel this appointment?")) return;
     try {
-      await api.patch(`/api/customer/appointment/${id}/cancel`, {});
+      await api.patch(`/api/appointment/${id}/cancel`, {});
       toast.success("Appointment cancelled");
       fetchAppointments();
     } catch (error) {

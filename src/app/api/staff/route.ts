@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
                 userId: staff.id,
                 providerId: session.user.id,
                 businessId: buiness.id,
-                workingHours: "9am - 5pm",
+                workingHours: "09:00 - 17:00",
                 active: true,
             }
         });
@@ -62,27 +62,51 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const businessId = searchParams.get("businessId");
+    const serviceId = searchParams.get("serviceId");
 
-    if (!businessId) {
+    if (!businessId && !serviceId) {
       return NextResponse.json(
-        { message: "businessId is required" },
+        { message: "businessId or serviceId is required" },
         { status: 400 }
       );
     }
 
-    // Public read access (MVP)
-    await auth(); // optional session check
+    await auth(); 
 
+    // Build filter
+    const where: any = {};
+    if (businessId) where.businessId = businessId;
+    
+    // If filtering by serviceId, we need to check the relation
+    if (serviceId) {
+        where.services = {
+            some: { id: serviceId }
+        };
+    }
+    
     const staff = await prisma.staff.findMany({
-      where: { businessId },
-      select: {
-        id: true,
-        // name: true,
-        workingHours: true
+      where,
+      include: {
+        user: {
+            select: {
+                name: true,
+                email: true,
+                // image: true
+            }
+        }
       }
     });
+    
+    // Transform to flat object for frontend
+    const formattedStaff = staff.map((s: any) => ({
+        id: s.id,
+        name: s.user.name,
+        email: s.user.email,
+        // image: s.user.image,
+        workingHours: s.workingHours
+    }));
 
-    return NextResponse.json(staff, { status: 200 });
+    return NextResponse.json(formattedStaff, { status: 200 });
 
   } catch (error) {
     console.error("Get staff error:", error);

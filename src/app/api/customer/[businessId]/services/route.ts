@@ -19,6 +19,7 @@ export async function GET( _req: NextRequest,{params}: {params: Promise<{ busine
         });
         
         console.log("business: ",business);
+        console.log("hello world");
         console.log("service: ", service);
         return NextResponse.json(service, {status: 200})
     } catch (error) {

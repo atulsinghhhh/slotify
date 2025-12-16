@@ -71,12 +71,12 @@ model Service {
 model Customer {
   id           String        @id @default(uuid())
   name         String
-  email        String        @unique
-  password     String?
-  role         Role          @default(customer)
+  email        String
   phone        String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  password     String?
+  role         Role          @default(customer)
   appointments Appointment[]
 }
 
@@ -85,7 +85,7 @@ model Appointment {
   businessId String
   serviceId  String
   providerId String
-  staffId    String
+  staffId    String?
   customerId String
   startTime  DateTime
   endTime    DateTime
@@ -97,7 +97,7 @@ model Appointment {
   customer   Customer          @relation(fields: [customerId], references: [id])
   provider   User              @relation("ProviderAppointments", fields: [providerId], references: [id])
   service    Service           @relation(fields: [serviceId], references: [id])
-  staff      Staff?            @relation("StaffAppointments", fields: [staffId], references: [id])
+  staff      Staff?             @relation("StaffAppointments", fields: [staffId], references: [id])
   reminders  Reminder[]
 }
 

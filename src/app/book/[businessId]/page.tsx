@@ -33,21 +33,37 @@ export default function BookingPage() {
     if (!businessId) return;
     const fetchInitialData = async () => {
       try {
-        const [servicesData, staffData] = await Promise.all([
-          api.get(`/api/customer/${businessId}/services`),
-          api.get(`/api/staff?businessId=${businessId}`)
-        ]);
-        setServices(servicesData);
-        setStaffList(staffData);
+          const servicesData = await api.get(`/api/customer/${businessId}/services`);
+          setServices(servicesData);
       } catch (error) {
         console.error("Error fetching booking data", error);
-        toast.error("Failed to load booking options");
+        toast.error("Failed to load options");
       } finally {
         setLoading(false);
       }
     };
     fetchInitialData();
   }, [businessId]);
+
+  // Fetch staff when entering Step 2 (Staff Selection)
+  useEffect(() => {
+      if (step === 2 && selectedService) {
+          const fetchStaff = async () => {
+              setLoading(true);
+              try {
+                  // Assuming API endpoint: /api/services/:serviceId/staff 
+                  // OR /api/staff?serviceId=:serviceId
+                  const data = await api.get(`/api/staff?serviceId=${selectedService.id}`);
+                  setStaffList(data);
+              } catch (error) {
+                  console.error("Failed to fetch staff", error);
+              } finally {
+                  setLoading(false);
+              }
+          };
+          fetchStaff();
+      }
+  }, [step, selectedService]);
 
   useEffect(() => {
     if (step === 3 && selectedDate && selectedService) {
@@ -59,7 +75,8 @@ export default function BookingPage() {
                 const dateStr = format(selectedDate, "yyyy-MM-dd");
                 const staffQuery = selectedStaff ? `&staffId=${selectedStaff.id}` : "";
                 const data = await api.get(`/api/availability?businessId=${businessId}&serviceId=${selectedService.id}${staffQuery}&date=${dateStr}`);
-                setAvailability(data);
+                console.log("Fetched availability: ", data.slots);
+                setAvailability(data.slots || []);
             } catch (error) {
                 console.error("Failed to fetch availability", error);
                 // Fallback demo slots
@@ -83,7 +100,7 @@ export default function BookingPage() {
       setSubmitting(true);
       try {
           // POST /api/customer/appointments
-          await api.post("/api/customer/appointment", {
+            await api.post("/api/appointment", {
               businessId,
               serviceId: selectedService.id,
               staffId: selectedStaff?.id,
@@ -135,7 +152,7 @@ export default function BookingPage() {
                             selected={selectedStaff === null}
                             onSelect={() => setSelectedStaff(null)}
                         />
-                         {staffList.map(s => (
+                         {loading ? <Loader2 className="animate-spin" /> : staffList.map(s => (
                             <StaffCard 
                                 key={s.id} 
                                 staff={s} 
@@ -155,7 +172,7 @@ export default function BookingPage() {
                             mode="single"
                             selected={selectedDate}
                             onSelect={setSelectedDate}
-                            // disabled={(date) => date < new Date().setHours(0,0,0,0)}
+                            disabled={(date) => date < new Date().setHours(0,0,0,0)}
                             className="rounded-md border shadow"
                         />
                         <div className="flex-1">

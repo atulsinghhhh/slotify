@@ -22,31 +22,29 @@ export async function GET() {
     }
 }
 
-export async function PUT(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "provider"){
             return NextResponse.json({message:"Unauthorized"}, {status:401});
         }
         
-        const { name,address,phone,workingHours } = await request.json();
-        if(!name || !address || !phone || !workingHours){
-            return NextResponse.json({message:"All fields are required"}, {status:400});
+        const { name, address, phone, workingHours } = await request.json();
+        if(!name){
+            return NextResponse.json({message:"Name is required"}, {status:400});
         }
 
         const business = await prisma.business.create({
             data: {
                 name,
-                address,
-                phone,
-                workingHours,
+                address: address ?? "",
+                phone: phone ?? "",
+                workingHours: workingHours ?? {},
                 providerId: session.user.id
             }
         });
 
-        console.log("Business created:", business);
-
-        return NextResponse.json({message: "Business created successfully", business}, {status:201});
+        return NextResponse.json(business, {status:201});
     } catch (error) {
         console.error("Error creating business:", error);
         return NextResponse.json({message: "Internal Server Error"}, {status:500});

@@ -25,7 +25,7 @@ export function StaffCard({
     >
       <Avatar className="h-12 w-12">
         <AvatarImage src={staff.image} />
-        <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
+        <AvatarFallback>{staff.name?.charAt(0) || "?"}</AvatarFallback>
       </Avatar>
       <div className="flex-1">
         <CardTitle className="text-base">{staff.name}</CardTitle>

@@ -63,6 +63,21 @@ export default function BusinessPage() {
     }
   };
 
+   const handleDelete = async () => {
+      if (!business.id) return;
+      setSaving(true);
+      try {
+         await api.delete(`/api/business/${business.id}`);
+         toast.success("Business deleted successfully");
+         setBusiness({ id: "", name: "", description: "", address: "", phone: "" });
+         setIsNew(true);
+      } catch (error) {
+         toast.error("Failed to delete business");
+      } finally {
+         setSaving(false);
+      }
+   };
+
   if (loading) return <div className="p-8"><Loader2 className="animate-spin" /></div>;
 
   return (
@@ -100,10 +115,15 @@ export default function BusinessPage() {
                  />
               </div>
            </CardContent>
-           <CardFooter>
+           <CardFooter className="flex gap-3">
               <Button type="submit" disabled={saving}>
-                 {saving ? "Saving..." : "Save Changes"}
+                 {saving ? "Saving..." : isNew ? "Create" : "Save Changes"}
               </Button>
+              {!isNew && (
+                <Button type="button" variant="destructive" onClick={handleDelete} disabled={saving}>
+                  Delete
+                </Button>
+              )}
            </CardFooter>
         </form>
       </Card>
