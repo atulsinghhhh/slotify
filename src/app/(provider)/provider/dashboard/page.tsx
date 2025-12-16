@@ -19,9 +19,9 @@ export default function ProviderDashboard() {
         
         // Calculate stats client-side for MVP
         const today = new Date().toISOString().split("T")[0];
-        const todayCount = aptList.filter((a: any) => a.date && a.date.startsWith(today)).length;
-        const pendingCount = aptList.filter((a: any) => a.status === "PENDING").length;
-        const completedCount = aptList.filter((a: any) => a.status === "COMPLETED").length;
+        const todayCount = aptList.filter((a: { date?: string }) => a.date && a.date.startsWith(today)).length;
+        const pendingCount = aptList.filter((a: { status?: string }) => a.status === "PENDING").length;
+        const completedCount = aptList.filter((a: { status?: string }) => a.status === "COMPLETED").length;
         
         setStats({ today: todayCount, pending: pendingCount, completed: completedCount });
       } catch (error) {
@@ -40,7 +40,7 @@ export default function ProviderDashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
+            <CardTitle className="text-sm font-medium">Today&apos;s Appointments</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>

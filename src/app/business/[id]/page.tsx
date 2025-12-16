@@ -6,7 +6,6 @@ import { api } from "@/lib/api";
 import { ServiceCard } from "@/components/ServiceCard";
 import { StaffCard } from "@/components/StaffCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Phone, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,9 @@ export default function BusinessDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   
-  const [business, setBusiness] = useState<any>(null);
-  const [services, setServices] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
+  const [business, setBusiness] = useState<{ id: string; name: string; phone: string; address: string } | null>(null);
+  const [services, setServices] = useState<Array<{ id: string; name: string; price: number; duration: number }>>([]);
+  const [staff, setStaff] = useState<Array<{ id: string; name: string; email: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,8 +32,8 @@ export default function BusinessDetailPage() {
         setBusiness(businessData);
         setServices(servicesData);
         setStaff(staffData);
-      } catch (error) {
-        console.error("Error fetching business details", error);
+      } catch {
+        // Error silently handled
       } finally {
         setLoading(false);
       }
@@ -50,7 +49,7 @@ export default function BusinessDetailPage() {
       <div className="mb-8 p-6 bg-card rounded-lg border shadow-sm flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
            <h1 className="text-3xl font-bold mb-2">{business.name}</h1>
-           <p className="text-muted-foreground mb-4 max-w-2xl">{business.description}</p>
+           <p className="text-muted-foreground mb-4 max-w-2xl">{business.address}</p>
            <div className="flex gap-4 text-sm text-muted-foreground">
              {business.address && (
                 <div className="flex items-center gap-1"><MapPin className="h-4 w-4"/> {business.address}</div>

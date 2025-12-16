@@ -1,6 +1,5 @@
 import { NextRequest,NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
 import { generateSlotTimes } from "@/lib/slot";
 
 
@@ -65,7 +64,7 @@ export async function GET(request: NextRequest) {
                      console.log(`Checking availability for: ${date} (${dayOfWeek})`);
                      console.log("Working Hours JSON:", JSON.stringify(workingHours));
 
-                     const daySchedule = workingHours[dayOfWeek];
+                     const daySchedule = (workingHours as Record<string, unknown>)[dayOfWeek];
                      console.log("Schedule for day:", daySchedule);
 
                      if (!daySchedule || daySchedule === "closed") {

@@ -10,7 +10,7 @@ import { Loader2, Check } from "lucide-react";
 import { format } from "date-fns";
 
 export default function ProviderAppointmentsPage() {
-  const [appointments, setAppointments] = useState<Array<{ id: string; service?: { name: string }; customer?: { name: string }; startTime: string; status: string }>>([]);
+  const [appointments, setAppointments] = useState<Array<{ id: string; service?: { name: string }; customer?: { name: string }; startTime: string; status: Status; date: string; staff?: { name: string } }>>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAppointments = async () => {
@@ -34,7 +34,7 @@ export default function ProviderAppointmentsPage() {
         await api.patch(`/api/appointment/${id}/status`, { status });
         toast.success("Status updated");
         fetchAppointments();
-    } catch (error) {
+    } catch {
         toast.error("Failed to update status");
     }
   };

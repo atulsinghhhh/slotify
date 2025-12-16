@@ -38,7 +38,7 @@ export default function ServicesPage() {
   }, []);
 
   const handleOpen = (service?: { id: string; name: string; price: number; duration: number; description?: string }) => {
-      setEditingService(service);
+      setEditingService(service ?? null);
       if (service) {
           setParamName(service.name);
           setParamPrice(service.price.toString());
@@ -86,7 +86,7 @@ export default function ServicesPage() {
           await api.delete(`/api/service/${id}`);
           toast.success("Service deleted");
           fetchServices();
-      } catch (error) {
+      } catch {
           toast.error("Failed to delete service");
       }
   };

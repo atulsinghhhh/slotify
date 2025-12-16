@@ -45,7 +45,7 @@ export default function AppointmentsPage() {
       await api.patch(`/api/appointment/${id}/cancel`, {});
       toast.success("Appointment cancelled");
       fetchAppointments();
-    } catch (error) {
+    } catch {
       toast.error("Failed to cancel appointment");
     }
   };

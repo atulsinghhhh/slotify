@@ -15,7 +15,6 @@ import { Plus, Loader2, Edit2, Trash2, Save, Users } from "lucide-react";
 type StaffRow = { id: string; name: string; email: string; workingHours?: string; services?: { id: string; name: string }[] };
 
 export default function StaffPage() {
-  const [_, setBusinessId] = useState<string | null>(null);
   const [staff, setStaff] = useState<StaffRow[]>([]);
   const [services, setServices] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +35,6 @@ export default function StaffPage() {
       const biz = await api.get("/api/business");
       const id = biz?.id ?? biz?.business?.id ?? null;
       if (!id) throw new Error("No business found for provider");
-      setBusinessId(id);
 
       const [staffList, svc] = await Promise.all([
         api.get(`/api/staff?businessId=${id}`),
@@ -45,8 +43,8 @@ export default function StaffPage() {
 
       setStaff(Array.isArray(staffList) ? staffList : []);
       const svcArr = Array.isArray(svc?.services) ? svc.services : [];
-      setServices(svcArr.map((s: any) => ({ id: s.id, name: s.name })));
-    } catch (e) {
+      setServices(svcArr.map((s: { id: string; name: string }) => ({ id: s.id, name: s.name })));
+    } catch {
       toast.error("Failed to load staff/services");
     } finally {
       setLoading(false);
@@ -76,9 +74,9 @@ export default function StaffPage() {
       setEmail(data?.user?.email ?? "");
       setPassword("");
       setWorkingHours(data?.workingHours ?? "");
-      setSelectedServiceIds(Array.isArray(data?.services) ? data.services.map((s: any) => s.id) : []);
+      setSelectedServiceIds(Array.isArray(data?.services) ? data.services.map((s: { id: string }) => s.id) : []);
       setOpen(true);
-    } catch (e) {
+    } catch {
       toast.error("Failed to load staff details");
     } finally {
       setSaving(false);
@@ -106,7 +104,7 @@ export default function StaffPage() {
       }
       setOpen(false);
       await fetchBusinessAndData();
-    } catch (e) {
+    } catch {
       toast.error("Failed to save staff");
     } finally {
       setSaving(false);
@@ -120,7 +118,7 @@ export default function StaffPage() {
       await api.delete(`/api/staff/${id}`);
       toast.success("Staff deleted");
       await fetchBusinessAndData();
-    } catch (e) {
+    } catch {
       toast.error("Failed to delete staff");
     } finally {
       setSaving(false);
@@ -167,7 +165,7 @@ export default function StaffPage() {
                 <TableHead>Email</TableHead>
                 <TableHead>Working Hours</TableHead>
                 <TableHead>Services</TableHead>
-                <TableHead className="w-[140px]">Actions</TableHead>
+                <TableHead className="w-36">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

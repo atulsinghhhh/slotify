@@ -4,7 +4,7 @@ export const api = {
     if (!res.ok) throw new Error(`GET ${url} failed: ${res.statusText}`);
     return res.json();
   },
-  post: async (url: string, body: any) => {
+  post: async (url: string, body: unknown) => {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -13,7 +13,7 @@ export const api = {
     if (!res.ok) throw new Error(`POST ${url} failed: ${res.statusText}`);
     return res.json();
   },
-  put: async (url: string, body: any) => {
+  put: async (url: string, body: unknown) => {
     const res = await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -22,7 +22,7 @@ export const api = {
     if (!res.ok) throw new Error(`PUT ${url} failed: ${res.statusText}`);
     return res.json();
   },
-  patch: async (url: string, body: any) => {
+  patch: async (url: string, body: unknown) => {
     const res = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

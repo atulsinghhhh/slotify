@@ -55,7 +55,7 @@ export default function BusinessPage() {
             } else {
                setIsNew(true);
             }
-         } catch (error) {
+         } catch {
             setIsNew(true);
          } finally {
             setLoading(false);
@@ -118,7 +118,7 @@ export default function BusinessPage() {
             });
             toast.success("Business updated successfully");
          }
-      } catch (error) {
+      } catch {
          toast.error("Failed to save business details");
       } finally {
          setSaving(false);
@@ -139,7 +139,7 @@ export default function BusinessPage() {
             workingHours: { days: [], hours: "09:00 - 18:00" },
          });
          setIsNew(true);
-      } catch (error) {
+      } catch {
          toast.error("Failed to delete business");
       } finally {
          setSaving(false);

@@ -18,12 +18,12 @@ export default function BookingPage() {
   const businessId = params?.businessId as string;
 
   const [step, setStep] = useState(1);
-  const [services, setServices] = useState<any[]>([]);
-  const [staffList, setStaffList] = useState<any[]>([]);
+  const [services, setServices] = useState<Array<{ id: string; name: string; duration: number; price: number }>>([]);
+  const [staffList, setStaffList] = useState<Array<{ id: string; name: string; email: string }>>([]);
   const [availability, setAvailability] = useState<string[]>([]);
   
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<{ id: string; name: string; duration: number; price: number } | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<{ id: string; name: string; email: string } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,8 +35,7 @@ export default function BookingPage() {
       try {
           const servicesData = await api.get(`/api/customer/${businessId}/services`);
           setServices(servicesData);
-      } catch (error) {
-        console.error("Error fetching booking data", error);
+      } catch {
         toast.error("Failed to load options");
       } finally {
         setLoading(false);
@@ -110,7 +109,7 @@ export default function BookingPage() {
           });
           toast.success("Appointment booked successfully!");
           router.push("/appointments");
-      } catch (error) {
+      } catch {
           toast.error("Booking failed. Please try again.");
       } finally {
           setSubmitting(false);
@@ -172,7 +171,7 @@ export default function BookingPage() {
                             mode="single"
                             selected={selectedDate}
                             onSelect={setSelectedDate}
-                            disabled={(date) => date < new Date().setHours(0,0,0,0)}
+                            disabled={(date) => date.getTime() < new Date().setHours(0,0,0,0)}
                             className="rounded-md border shadow"
                         />
                         <div className="flex-1">

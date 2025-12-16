@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         await auth(); 
 
         // Build filter
-        const where: any = {};
+        const where: Record<string, unknown> = {};
         if (businessId) where.businessId = businessId;
         
         // If filtering by serviceId, we need to check the relation
@@ -98,13 +98,15 @@ export async function GET(request: NextRequest) {
         });
         
         // Transform to flat object for frontend
-        const formattedStaff = staff.map((s: any) => ({
-            id: s.id,
-            name: s.user.name,
-            email: s.user.email,
+        const formattedStaff = staff.map((s: unknown) => {
+            const staffObj = s as { id: string; user: { name: string; email: string }; workingHours: unknown };
+            return {
+            id: staffObj.id,
+            name: staffObj.user.name,
+            email: staffObj.user.email,
             // image: s.user.image,
-            workingHours: s.workingHours
-        }));
+            workingHours: staffObj.workingHours
+        }});
 
         return NextResponse.json(formattedStaff, { status: 200 });
 
