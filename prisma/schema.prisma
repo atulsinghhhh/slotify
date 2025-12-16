@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String        @id @default(uuid())
+  name                 String
+  email                String        @unique
+  password             String?
+  role                 Role
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  providerAppointments Appointment[] @relation("ProviderAppointments")
+  business             Business?     @relation("ProviderBusiness")
+  services             Service[]     @relation("ProviderServices")
+  staffMembers         Staff[]       @relation("ProviderStaffUsers")
+  staffProfile         Staff?        @relation("StaffProfile")
+}
+
+model Business {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String
+  address      String
+  workingHours Json
+  providerId   String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+  provider     User          @relation("ProviderBusiness", fields: [providerId], references: [id])
+  services     Service[]     @relation("BusinessServices")
+  staff        Staff[]       @relation("BusinessStaff")
+}
+
+model Staff {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  providerId   String
+  businessId   String
+  workingHours Json?
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[] @relation("StaffAppointments")
+  business     Business      @relation("BusinessStaff", fields: [businessId], references: [id])
+  provider     User          @relation("ProviderStaffUsers", fields: [providerId], references: [id])
+  user         User          @relation("StaffProfile", fields: [userId], references: [id])
+  services     Service[]     @relation("StaffServices")
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  providerId   String
+  businessId   String
+  duration     Int
+  price        Float
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+  business     Business      @relation("BusinessServices", fields: [businessId], references: [id])
+  provider     User          @relation("ProviderServices", fields: [providerId], references: [id])
+  staff        Staff[]       @relation("StaffServices")
+}
+
+model Customer {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String?
+  role         Role          @default(customer)
+  phone        String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+}
+
+model Appointment {
+  id         String            @id @default(uuid())
+  businessId String
+  serviceId  String
+  providerId String
+  staffId    String
+  customerId String
+  startTime  DateTime
+  endTime    DateTime
+  status     AppointmentStatus @default(BOOKED)
+  date       DateTime
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  business   Business          @relation(fields: [businessId], references: [id])
+  customer   Customer          @relation(fields: [customerId], references: [id])
+  provider   User              @relation("ProviderAppointments", fields: [providerId], references: [id])
+  service    Service           @relation(fields: [serviceId], references: [id])
+  staff      Staff?            @relation("StaffAppointments", fields: [staffId], references: [id])
+  reminders  Reminder[]
+}
+
+model Reminder {
+  id            String      @id @default(uuid())
+  appointmentId String
+  type          String
+  sentAt        DateTime    @default(now())
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+enum Role {
+  provider
+  staff
+  customer
+}
+
+enum AppointmentStatus {
+  BOOKED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
