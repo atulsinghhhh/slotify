@@ -3,25 +3,25 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { format } from "date-fns";
 import { Calendar, CheckCircle, Clock } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export default function ProviderDashboard() {
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Array<{ id: string; date: string; status: string; service?: { name: string }; customer?: { name: string }; startTime: string }>>([]);
   const [stats, setStats] = useState({ today: 0, pending: 0, completed: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await api.get("/api/appointment");
-        setAppointments(data.appointments);
+        const aptList = Array.isArray(data) ? data : (data?.appointments || []);
+        setAppointments(aptList);
         
         // Calculate stats client-side for MVP
         const today = new Date().toISOString().split("T")[0];
-        const todayCount = data.filter((a: any) => a.date.startsWith(today)).length;
-        const pendingCount = data.filter((a: any) => a.status === "PENDING").length;
-        const completedCount = data.filter((a: any) => a.status === "COMPLETED").length;
+        const todayCount = aptList.filter((a: any) => a.date && a.date.startsWith(today)).length;
+        const pendingCount = aptList.filter((a: any) => a.status === "PENDING").length;
+        const completedCount = aptList.filter((a: any) => a.status === "COMPLETED").length;
         
         setStats({ today: todayCount, pending: pendingCount, completed: completedCount });
       } catch (error) {
@@ -68,7 +68,7 @@ export default function ProviderDashboard() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Today's Schedule</h2>
+        <h2 className="text-xl font-semibold">Today&apos;s Schedule</h2>
         {appointments.length === 0 ? (
            <p className="text-muted-foreground">No appointments for today.</p>
         ) : (
@@ -76,12 +76,12 @@ export default function ProviderDashboard() {
              {appointments.slice(0, 5).map(apt => (
                 <Card key={apt.id}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <div className="font-semibold">{apt.service.name}</div>
+                        <div className="font-semibold">{apt.service?.name || "Service"}</div>
                         <StatusBadge status={apt.status} />
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
                         <div>Customer: {apt.customer?.name || "Guest"}</div>
-                        <div>Time: {apt.startTime}</div>
+                        <div>Time: {apt.startTime ? new Date(apt.startTime).toLocaleTimeString() : "—"}</div>
                     </CardContent>
                 </Card>
              ))}

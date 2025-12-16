@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, ctx: { params: Promise<{ staffId
             return NextResponse.json({ message: "Not found" }, { status: 404 });
         }
 
-        const data: any = {};
+        const data: Record<string, unknown> = {};
         if (typeof workingHours === "string") data.workingHours = workingHours;
         if (Array.isArray(services)) {
             data.services = {

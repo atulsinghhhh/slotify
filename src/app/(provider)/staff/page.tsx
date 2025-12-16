@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { Plus, Loader2, Edit2, Trash2, Save, Users } from "lucide-react";
 type StaffRow = { id: string; name: string; email: string; workingHours?: string; services?: { id: string; name: string }[] };
 
 export default function StaffPage() {
-  const [businessId, setBusinessId] = useState<string | null>(null);
+  const [_, setBusinessId] = useState<string | null>(null);
   const [staff, setStaff] = useState<StaffRow[]>([]);
   const [services, setServices] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,7 +176,7 @@ export default function StaffPage() {
                   <TableCell>{s.name}</TableCell>
                   <TableCell>{s.email}</TableCell>
                   <TableCell>{s.workingHours ?? "—"}</TableCell>
-                  <TableCell>{Array.isArray((s as any).services) ? (s as any).services.map((x:any)=>x.name).join(", ") : "—"}</TableCell>
+                  <TableCell>{Array.isArray((s as unknown as Record<string, unknown>).services) ? ((s as unknown as Record<string, unknown>).services as Array<{name: string}>).map((x)=>x.name).join(", ") : "—"}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" onClick={() => openEdit(s.id)}><Edit2 className="h-4 w-4" /></Button>

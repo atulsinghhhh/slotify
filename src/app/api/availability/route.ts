@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
 
             if (staff.workingHours) {
                 // Parse workingHours JSON
-                let workingHours: any = staff.workingHours;
+                let workingHours: unknown = staff.workingHours;
                 if (typeof workingHours === "string") {
                      try {
                         workingHours = JSON.parse(workingHours);
-                     } catch (e) {
+                     } catch {
                         // Handle legacy string format "09:00 - 17:00"
-                        const [start, end] = workingHours.split(" - ");
+                        const [start, end] = (workingHours as string).split(" - ");
                         workingStart = start;
                         workingEnd = end;
                         workingHours = null; // skip JSON logic

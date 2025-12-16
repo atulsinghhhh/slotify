@@ -29,16 +29,16 @@ export function ProviderSidebar() {
         {items.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Link key={item.href} href={item.href} legacyBehavior passHref>
+            <Link key={item.href} href={item.href}>
                <Button
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn("w-full justify-start gap-2", isActive && "bg-secondary")}
                 asChild
                >
-                 <a href={item.href}>
+                 <span>
                    <item.icon className="h-4 w-4" />
                    {item.name}
-                 </a>
+                 </span>
                </Button>
             </Link>
           );

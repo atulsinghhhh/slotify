@@ -10,15 +10,16 @@ import { Loader2, Check } from "lucide-react";
 import { format } from "date-fns";
 
 export default function ProviderAppointmentsPage() {
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Array<{ id: string; service?: { name: string }; customer?: { name: string }; startTime: string; status: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAppointments = async () => {
     try {
-      const data = await api.get("/api/appointments"); // As per prompt: GET /api/appointments
-      setAppointments(data);
-    } catch (error) {
-      console.error("Failed to fetch appointments", error);
+      const data = await api.get("/api/appointment"); // As per prompt: GET /api/appointments
+      console.log("Fetched appointments:", data.appointments);
+      setAppointments(data.appointments || []);
+    } catch {
+      // Error silently handled
     } finally {
       setLoading(false);
     }

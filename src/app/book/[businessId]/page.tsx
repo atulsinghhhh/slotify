@@ -109,7 +109,7 @@ export default function BookingPage() {
               endTime: "calculate-based-on-duration-or-handled-by-backend" // Backend should handle duration
           });
           toast.success("Appointment booked successfully!");
-          router.push("/appointment");
+          router.push("/appointments");
       } catch (error) {
           toast.error("Booking failed. Please try again.");
       } finally {

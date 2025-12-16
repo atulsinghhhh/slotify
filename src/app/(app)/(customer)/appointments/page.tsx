@@ -26,10 +26,10 @@ export default function AppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       const data = await api.get("/api/customer/appointment");
-      setAppointments(data);
-    } catch (error) {
-      console.error("Failed to fetch appointments", error);
-      // setAppointments([]); 
+      console.log("Fetched appointments:", data.appointments);
+      setAppointments(Array.isArray(data.appointments) ? data.appointments : []);
+    } catch {
+      // Error handled silently
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function AppointmentsPage() {
     }
   };
 
-  const handleReschedule = async (id: string) => {
+  const handleReschedule = async () => {
     // For MVP, maybe redirect to booking page or show modal? 
     // Prompt says "actions to cancel and reschedule".
     // Reschedule involves picking new date/time. 
@@ -75,14 +75,14 @@ export default function AppointmentsPage() {
             <Card key={apt.id}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-base font-semibold">
-                  {apt.service.name} at {apt.business.name}
+                  {apt.service?.name} at {apt.business?.name}
                 </CardTitle>
                 <StatusBadge status={apt.status} />
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <p>Date: {format(new Date(apt.date), "PPP")}</p>
-                  <p>Time: {apt.startTime} ({apt.service.duration} mins)</p>
+                  <p>Time: {apt.startTime} ({apt.service?.duration} mins)</p>
                   <p>Staff: {apt.staff?.name || "Any Staff"}</p>
                 </div>
               </CardContent>

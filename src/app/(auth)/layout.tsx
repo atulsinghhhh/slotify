@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { GalleryVerticalEnd } from "lucide-react";
 
 export default function AuthLayout({
@@ -22,10 +23,12 @@ export default function AuthLayout({
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80"
-          alt="Image"
+          alt="Background"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          fill
+          priority
         />
       </div>
     </div>

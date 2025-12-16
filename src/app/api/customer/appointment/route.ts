@@ -1,4 +1,4 @@
-import { NextResponse,NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
@@ -10,12 +10,14 @@ export async function GET() {
         }
 
         const appointments = await prisma.appointment.findMany({
-            where: { customerId: session.user.id }
+            where: { customerId: session.user.id },
+            include: {
+                service: { select: { id: true, name: true, duration: true } },
+                business: { select: { id: true, name: true } },
+                staff: { select: { id: true, user: { select: { name: true } } } }
+            }
         });
-        if(!appointments){
-            return NextResponse.json({message: "No appointments found"}, {status: 404});
-        }
-        return NextResponse.json(appointments, {status: 200});
+        return NextResponse.json({ appointments }, {status: 200});
     } catch (error) {
         console.log("Error fetching appointments: ", error);
         return NextResponse.json({error: "Internal Server Error"}, {status: 500});

@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { Plus, Loader2, Trash2 } from "lucide-react";
 
 export default function ServicesPage() {
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<Array<{ id: string; name: string; price: number; duration: number; description?: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [editingService, setEditingService] = useState<any>(null);
+  const [editingService, setEditingService] = useState<{ id: string; name: string; price: number; duration: number; description?: string } | null>(null);
   
   const [paramName, setParamName] = useState("");
   const [paramPrice, setParamPrice] = useState("");
@@ -37,7 +37,7 @@ export default function ServicesPage() {
     fetchServices();
   }, []);
 
-  const handleOpen = (service?: any) => {
+  const handleOpen = (service?: { id: string; name: string; price: number; duration: number; description?: string }) => {
       setEditingService(service);
       if (service) {
           setParamName(service.name);
@@ -73,7 +73,7 @@ export default function ServicesPage() {
           }
           setOpen(false);
           fetchServices();
-      } catch (error) {
+      } catch {
           toast.error("Failed to save service");
       } finally {
           setSaving(false);

@@ -48,8 +48,7 @@ export default function LoginPage() {
       const session = await getSession();
       if (session?.user) {
         // Assume 'role' is part of the session user object
-        // We might need to cast to any if TS complains about custom properties on User
-        const user = session.user as any; 
+        const user = session.user as { role?: string };
         
         toast.success("Logged in successfully");
         
@@ -126,7 +125,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-primary hover:underline">
               Sign up
             </Link>

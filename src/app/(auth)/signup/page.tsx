@@ -67,7 +67,7 @@ export default function SignupPage() {
            router.push("/login"); // Fallback
       }
 
-    } catch (error) {
+    } catch {
       toast.error("Signup failed. Email might be already in use.");
     } finally {
       setLoading(false);
