@@ -50,14 +50,14 @@ export default function AppointmentsPage() {
     }
   };
 
-  const handleReschedule = async () => {
-    // For MVP, maybe redirect to booking page or show modal? 
-    // Prompt says "actions to cancel and reschedule".
-    // Reschedule involves picking new date/time. 
-    // Simplest MVP: Cancel + Rebook or "Not implemented" for now but button exists.
-    // I'll show a toast for MVP or todo.
-    toast.info("Rescheduling feature coming soon. Please cancel and re-book.");
-  };
+  // const handleReschedule = async () => {
+  //   // For MVP, maybe redirect to booking page or show modal? 
+  //   // Prompt says "actions to cancel and reschedule".
+  //   // Reschedule involves picking new date/time. 
+  //   // Simplest MVP: Cancel + Rebook or "Not implemented" for now but button exists.
+  //   // I'll show a toast for MVP or todo.
+  //   toast.info("Rescheduling feature coming soon. Please cancel and re-book.");
+  // };
 
   if (loading) return <div className="container mx-auto p-8"><Loader2 className="animate-spin" /></div>;
 
@@ -89,7 +89,7 @@ export default function AppointmentsPage() {
               <CardFooter className="flex justify-end gap-2">
                  {apt.status === "PENDING" || apt.status === "CONFIRMED" ? (
                    <>
-                     <Button variant="outline" onClick={() => handleReschedule(apt.id)}>Reschedule</Button>
+                     {/* <Button variant="outline" onClick={() => handleReschedule(apt.id)}>Reschedule</Button> */}
                      <Button variant="destructive" onClick={() => handleCancel(apt.id)}>Cancel</Button>
                    </>
                  ) : null}
