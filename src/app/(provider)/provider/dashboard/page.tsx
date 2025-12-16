@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Calendar, CheckCircle, Clock } from "lucide-react";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusBadge, Status } from "@/components/StatusBadge";
 
 export default function ProviderDashboard() {
   const [appointments, setAppointments] = useState<Array<{ id: string; date: string; status: string; service?: { name: string }; customer?: { name: string }; startTime: string }>>([]);
@@ -77,7 +77,7 @@ export default function ProviderDashboard() {
                 <Card key={apt.id}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <div className="font-semibold">{apt.service?.name || "Service"}</div>
-                        <StatusBadge status={apt.status} />
+                        <StatusBadge status={apt.status as Status} />
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
                         <div>Customer: {apt.customer?.name || "Guest"}</div>
