@@ -2,14 +2,14 @@ import { NextResponse,NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function GET(_req: NextRequest, { params }: { params: { businessId: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ businessId: string }> }) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "provider"){
             return NextResponse.json({message: "Unauthorized"}, {status: 401});
         }
 
-        const { businessId } = params;
+        const { businessId } = await params;
         const business = await prisma.business.findUnique({ where: { id: businessId } });
         if (!business || business.providerId !== session.user.id) {
             return NextResponse.json({ message: "Not found" }, { status: 404 });
@@ -21,14 +21,14 @@ export async function GET(_req: NextRequest, { params }: { params: { businessId:
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params : { businessId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params : Promise<{ businessId: string }> }) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "provider"){
             return NextResponse.json({message: "Unauthorized"}, {status: 401});
         }
 
-        const { businessId } = params;
+        const { businessId } = await params;
         if(!businessId){
             return NextResponse.json({message: "Business ID is required"}, {status: 400});
         }
@@ -55,14 +55,14 @@ export async function PUT(request: NextRequest, { params }: { params : { busines
     }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { businessId: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ businessId: string }> }) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "provider"){
             return NextResponse.json({message: "Unauthorized"}, {status: 401});
         }
 
-        const { businessId } = params;
+        const { businessId } = await params;
         const existing = await prisma.business.findUnique({ where: { id: businessId } });
         if (!existing || existing.providerId !== session.user.id) {
             return NextResponse.json({ message: "Not found" }, { status: 404 });

@@ -21,13 +21,13 @@ export default function AuthLayout({
           <div className="w-full max-w-xs">{children}</div>
         </div>
       </div>
-      {/* <div className="relative hidden bg-muted lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <img
           src="https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
-      </div> */}
+      </div>
     </div>
   );
 }

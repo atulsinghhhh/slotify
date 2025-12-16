@@ -14,8 +14,8 @@ export default function ProviderDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await api.get("/api/provider/appointments");
-        setAppointments(data);
+        const data = await api.get("/api/appointment");
+        setAppointments(data.appointments);
         
         // Calculate stats client-side for MVP
         const today = new Date().toISOString().split("T")[0];

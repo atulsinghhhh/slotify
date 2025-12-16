@@ -59,60 +59,60 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const businessId = searchParams.get("businessId");
-    const serviceId = searchParams.get("serviceId");
+    try {
+        const { searchParams } = new URL(request.url);
+        const businessId = searchParams.get("businessId");
+        const serviceId = searchParams.get("serviceId");
 
-    if (!businessId && !serviceId) {
-      return NextResponse.json(
-        { message: "businessId or serviceId is required" },
-        { status: 400 }
-      );
-    }
+        if (!businessId && !serviceId) {
+        return NextResponse.json(
+            { message: "businessId or serviceId is required" },
+            { status: 400 }
+        );
+        }
 
-    await auth(); 
+        await auth(); 
 
-    // Build filter
-    const where: any = {};
-    if (businessId) where.businessId = businessId;
-    
-    // If filtering by serviceId, we need to check the relation
-    if (serviceId) {
-        where.services = {
-            some: { id: serviceId }
-        };
-    }
-    
-    const staff = await prisma.staff.findMany({
-      where,
-      include: {
-        user: {
-            select: {
-                name: true,
-                email: true,
-                // image: true
+        // Build filter
+        const where: any = {};
+        if (businessId) where.businessId = businessId;
+        
+        // If filtering by serviceId, we need to check the relation
+        if (serviceId) {
+            where.services = {
+                some: { id: serviceId }
+            };
+        }
+        
+        const staff = await prisma.staff.findMany({
+        where,
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    email: true,
+                    // image: true
+                }
             }
         }
-      }
-    });
-    
-    // Transform to flat object for frontend
-    const formattedStaff = staff.map((s: any) => ({
-        id: s.id,
-        name: s.user.name,
-        email: s.user.email,
-        // image: s.user.image,
-        workingHours: s.workingHours
-    }));
+        });
+        
+        // Transform to flat object for frontend
+        const formattedStaff = staff.map((s: any) => ({
+            id: s.id,
+            name: s.user.name,
+            email: s.user.email,
+            // image: s.user.image,
+            workingHours: s.workingHours
+        }));
 
-    return NextResponse.json(formattedStaff, { status: 200 });
+        return NextResponse.json(formattedStaff, { status: 200 });
 
-  } catch (error) {
-    console.error("Get staff error:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
+    } catch (error) {
+        console.error("Get staff error:", error);
+        return NextResponse.json(
+        { message: "Internal Server Error" },
+        { status: 500 }
+        );
+    }
 }

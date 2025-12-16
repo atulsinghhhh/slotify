@@ -43,7 +43,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       // Use different endpoints based on role
-      const endpoint = role === "customer" ? "/api/customer" : "/api/provider";
+      const endpoint = role === "customer" ? "/api/customer" : "/api/signup";
       
       await api.post(endpoint, { ...formData }); 
       

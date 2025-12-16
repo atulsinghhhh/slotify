@@ -30,7 +30,7 @@ export default function ProviderAppointmentsPage() {
 
   const handleStatusUpdate = async (id: string, status: string) => {
     try {
-        await api.patch(`/api/appointments/${id}/status`, { status });
+        await api.patch(`/api/appointment/${id}/status`, { status });
         toast.success("Status updated");
         fetchAppointments();
     } catch (error) {

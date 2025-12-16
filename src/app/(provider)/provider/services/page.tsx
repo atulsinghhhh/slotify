@@ -24,8 +24,8 @@ export default function ServicesPage() {
 
   const fetchServices = async () => {
     try {
-      const data = await api.get("/api/services");
-      setServices(data);
+      const data = await api.get("/api/service");
+      setServices(data.services);
     } catch (error) {
       console.error("Failed to fetch services", error);
     } finally {
@@ -65,10 +65,10 @@ export default function ServicesPage() {
 
       try {
           if (editingService) {
-              await api.put(`/api/services/${editingService.id}`, payload);
+              await api.put(`/api/service/${editingService.id}`, payload);
               toast.success("Service updated");
           } else {
-              await api.post("/api/services", payload);
+              await api.post("/api/service", payload);
               toast.success("Service added");
           }
           setOpen(false);
@@ -83,7 +83,7 @@ export default function ServicesPage() {
   const handleDelete = async (id: string) => {
       if (!confirm("Delete this service?")) return;
       try {
-          await api.delete(`/api/services/${id}`);
+          await api.delete(`/api/service/${id}`);
           toast.success("Service deleted");
           fetchServices();
       } catch (error) {
@@ -135,10 +135,6 @@ export default function ServicesPage() {
                     <Label>Duration (min)</Label>
                     <Input type="number" value={paramDuration} onChange={e => setParamDuration(e.target.value)} required />
                 </div>
-             </div>
-             <div className="space-y-2">
-                <Label>Description</Label>
-                <Input value={paramDesc} onChange={e => setParamDesc(e.target.value)} />
              </div>
              <DialogFooter>
                 <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
