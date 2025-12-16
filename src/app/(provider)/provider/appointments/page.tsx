@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { StatusBadge, Status } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, Check } from "lucide-react";
 import { format } from "date-fns";
@@ -72,16 +73,20 @@ export default function ProviderAppointmentsPage() {
                         <TableCell>{apt.staff?.name || "-"}</TableCell>
                         <TableCell><StatusBadge status={apt.status} /></TableCell>
                         <TableCell className="text-right">
-                            {apt.status === "PENDING" && (
-                                <Button size="sm" onClick={() => handleStatusUpdate(apt.id, "CONFIRMED")}>
-                                    Confirm
-                                </Button>
-                            )}
-                            {apt.status === "CONFIRMED" && (
-                                <Button size="sm" variant="outline" className="gap-1" onClick={() => handleStatusUpdate(apt.id, "COMPLETED")}>
-                                    <Check className="h-3 w-3" /> Complete
-                                </Button>
-                            )}
+                            <Select
+                                value={apt.status}
+                                onValueChange={(value) => handleStatusUpdate(apt.id, value)}
+                            >
+                                <SelectTrigger className="w-[140px]">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="PENDING">Pending</SelectItem>
+                                    <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                                    <SelectItem value="COMPLETED">Completed</SelectItem>
+                                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </TableCell>
                     </TableRow>
                 ))
