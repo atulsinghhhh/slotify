@@ -72,10 +72,13 @@ export async function GET(request: NextRequest) {
                          return NextResponse.json({ slots: [] }, { status: 200 });
                      }
                      
-                     if (daySchedule.open && daySchedule.close) {
-                         workingStart = daySchedule.open;
-                         workingEnd = daySchedule.close;
-                         console.log(`Working hours set to: ${workingStart} - ${workingEnd}`);
+                     if (typeof daySchedule === "object" && daySchedule !== null) {
+                         const schedule = daySchedule as Record<string, unknown>;
+                         if (schedule.open && schedule.close) {
+                             workingStart = String(schedule.open);
+                             workingEnd = String(schedule.close);
+                             console.log(`Working hours set to: ${workingStart} - ${workingEnd}`);
+                         }
                      }
                 }
             }
