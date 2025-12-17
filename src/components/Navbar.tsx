@@ -10,7 +10,7 @@ export function Navbar() {
   // TODO: Add auth check here to show/hide Login/Dashboard links
   // For MVP, showing standard links
 
-  if (pathname.startsWith("/provider")) return null; // Don't show on provider dashboard
+  if (pathname.startsWith("/provider") || pathname.startsWith("/staff")) return null; // Don't show on provider dashboard
 
   return (
     <nav className="border-b bg-background sticky top-0 z-50">
