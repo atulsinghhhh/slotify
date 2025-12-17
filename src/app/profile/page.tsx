@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, User, Mail, Phone, Save } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 
-// ... imports kept same or updated ...
+// ... imports kept same ...
 export default function ProfilePage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -21,6 +22,7 @@ export default function ProfilePage() {
         name: "",
         email: "",
         phone: "",
+        image: "",
     });
 
     useEffect(() => {
@@ -47,6 +49,7 @@ export default function ProfilePage() {
                 name: data.name || "",
                 email: data.email || "",
                 phone: data.phone || "",
+                image: data.image || "",
             });
         } catch (error) {
             console.error("Failed to fetch profile:", error);
@@ -63,6 +66,7 @@ export default function ProfilePage() {
             await api.put(`/api/profile/${session?.user.id}`, {
                 name: profile.name,
                 phone: profile.phone,
+                image: profile.image,
             });
             toast.success("Profile updated successfully");
         } catch (error) {
@@ -104,6 +108,15 @@ export default function ProfilePage() {
                 </CardHeader>
                 <form onSubmit={handleSave}>
                     <CardContent className="space-y-6">
+                        <div className="flex flex-col gap-4">
+                            <Label>Profile Photo</Label>
+                            <ImageUpload 
+                                value={profile.image ? [profile.image] : []}
+                                disabled={saving}
+                                onChange={(url) => setProfile({ ...profile, image: url })}
+                                onRemove={() => setProfile({ ...profile, image: "" })}
+                            />
+                        </div>
                         <div className="grid gap-2">
                             <Label htmlFor="name" className="flex items-center gap-2 font-medium">
                                 <User className="h-4 w-4 text-primary" />

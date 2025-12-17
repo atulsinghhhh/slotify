@@ -45,10 +45,10 @@ export function Navbar() {
     <nav className="border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+           <div className="h-8 w-8 rounded-lg bg-linear-to-br from-primary to-purple-600 flex items-center justify-center">
               <Calendar className="h-5 w-5 text-white" />
            </div>
-           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+           <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-slate-400">
               Slotify
            </span>
         </Link>

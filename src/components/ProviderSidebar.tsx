@@ -51,10 +51,18 @@ export function ProviderSidebar() {
         </nav>
       </div>
       <div className="border-t border-sidebar-border p-4">
-         <div className="rounded-xl bg-sidebar-accent/50 p-4">
-            <h4 className="text-sm font-semibold">Pro Plan</h4>
-            <p className="text-xs text-muted-foreground mt-1">Upgrade for more features</p>
-         </div>
+         <Link href="/provider/plans">
+             <div className="rounded-xl bg-sidebar-accent/50 p-4 hover:bg-sidebar-accent transition-colors cursor-pointer group">
+                <div className="flex justify-between items-start mb-1">
+                    <h4 className="text-sm font-semibold group-hover:text-primary transition-colors">Pro Plan</h4>
+                    <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded uppercase font-bold">New</span>
+                </div>
+                <p className="text-xs text-muted-foreground">Upgrade for more features</p>
+                <div className="mt-3 w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-2/3 rounded-full" />
+                </div>
+             </div>
+         </Link>
       </div>
     </aside>
   );

@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { api } from "@/lib/api";
+import { Loader2 } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -24,22 +26,44 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function SignupPage() {
   const router = useRouter();
+  const [step, setStep] = useState<"details" | "otp">("details");
   const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [role, setRole] = useState<"customer" | "provider">("customer");
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const handleSignup = async (role: "customer" | "provider") => {
+  const handleSendOtp = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoading(true);
+      try {
+          await api.post("/api/auth/otp/send", { email: formData.email });
+          setStep("otp");
+          toast.success(`Verification code sent to ${formData.email}`);
+      } catch {
+          toast.error("Failed to send verification code.");
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  const handleVerifyAndSignup = async () => {
     setLoading(true);
     try {
-      const endpoint = role === "customer" ? "/api/customer" : "/api/signup";
+      // 1. Verify OTP
+      await api.post("/api/auth/otp/verify", { email: formData.email, token: otp });
       
+      // 2. Register User
+      const endpoint = role === "customer" ? "/api/customer" : "/api/signup";
       await api.post(endpoint, { ...formData }); 
       
       toast.success("Account created! Logging in...");
       
+      // 3. Login
       const res = await signIn("credentials", {
           email: formData.email,
           password: formData.password,
@@ -53,11 +77,12 @@ export default function SignupPage() {
                router.push("/business");
            }
       } else {
-           router.push("/login"); // Fallback
+           router.push("/login");
       }
 
-    } catch {
-      toast.error("Signup failed. Email might be already in use.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Verification failed or User exists.");
     } finally {
       setLoading(false);
     }
@@ -69,73 +94,73 @@ export default function SignupPage() {
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
             <p className="text-sm text-muted-foreground">
-                Enter your details below to create your account
+                {step === "details" ? "Enter your details below" : "Enter the verification code sent to your email"}
             </p>
           </div>
 
           <div className="grid gap-6">
-            <Tabs defaultValue="customer" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-muted/30">
-                  <TabsTrigger value="customer" className="h-9 rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Customer</TabsTrigger>
-                  <TabsTrigger value="provider" className="h-9 rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Provider</TabsTrigger>
-                </TabsList>
+            {step === "details" ? (
+                <Tabs defaultValue="customer" onValueChange={(v) => setRole(v as any)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-muted/30">
+                        <TabsTrigger value="customer" className="h-9">Customer</TabsTrigger>
+                        <TabsTrigger value="provider" className="h-9">Provider</TabsTrigger>
+                    </TabsList>
 
-                <Button variant="outline" className="w-full h-11 relative mb-6 border-border/50 hover:bg-muted/50" onClick={() => signIn("google")}>
-                  <GoogleIcon className="mr-2 h-4 w-4" />
-                  Sign up with Google
-                </Button>
+                    <Button variant="outline" className="w-full h-11 relative mb-6 border-border/50 hover:bg-muted/50" onClick={() => signIn("google")}>
+                        <GoogleIcon className="mr-2 h-4 w-4" />
+                        Sign up with Google
+                    </Button>
 
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border/50" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">Or with email</span>
-                  </div>
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/50" /></div>
+                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or with email</span></div>
+                    </div>
+
+                    <form onSubmit={handleSendOtp} className="space-y-4">
+                        <div className="grid gap-2">
+                            <Label>Full Name</Label>
+                            <Input required onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="John Doe" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Email</Label>
+                            <Input type="email" required onChange={(e) => setFormData({...formData, email: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="m@example.com" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Password</Label>
+                            <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} className="h-11 bg-muted/30 border-border/50" />
+                        </div>
+                        <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/25" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Next
+                        </Button>
+                    </form>
+                </Tabs>
+            ) : (
+                <div className="space-y-6 text-center">
+                    <div className="flex justify-center">
+                        <InputOTP maxLength={6} value={otp} onChange={(val) => setOtp(val)}>
+                            <InputOTPGroup>
+                                <InputOTPSlot index={0} />
+                                <InputOTPSlot index={1} />
+                                <InputOTPSlot index={2} />
+                            </InputOTPGroup>
+                            <div className="mx-2">-</div>
+                            <InputOTPGroup>
+                                <InputOTPSlot index={3} />
+                                <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                        </InputOTP>
+                    </div>
+                    <Button onClick={handleVerifyAndSignup} className="w-full h-11" disabled={loading || otp.length < 6}>
+                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                         Verify & Create Account
+                    </Button>
+                    <Button variant="ghost" onClick={() => setStep("details")} disabled={loading}>
+                        Back
+                    </Button>
                 </div>
-
-                <TabsContent value="customer" className="mt-0 space-y-4">
-                  <form onSubmit={(e) => { e.preventDefault(); handleSignup("customer"); }} className="space-y-4">
-                      <div className="grid gap-2">
-                          <Label>Full Name</Label>
-                          <Input required onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="John Doe" />
-                      </div>
-                      <div className="grid gap-2">
-                          <Label>Email</Label>
-                          <Input type="email" required onChange={(e) => setFormData({...formData, email: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="m@example.com" />
-                      </div>
-                      <div className="grid gap-2">
-                          <Label>Password</Label>
-                          <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} className="h-11 bg-muted/30 border-border/50" />
-                      </div>
-                      <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/25" disabled={loading}>
-                          {loading && <svg className="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
-                          Sign Up as Customer
-                      </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="provider" className="mt-0 space-y-4">
-                  <form onSubmit={(e) => { e.preventDefault(); handleSignup("provider"); }} className="space-y-4">
-                      <div className="grid gap-2">
-                          <Label>Full Name</Label>
-                          <Input required onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="Jane Smith" />
-                      </div>
-                      <div className="grid gap-2">
-                          <Label>Email</Label>
-                          <Input type="email" required onChange={(e) => setFormData({...formData, email: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="pro@business.com" />
-                      </div>
-                      <div className="grid gap-2">
-                          <Label>Password</Label>
-                          <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} className="h-11 bg-muted/30 border-border/50" />
-                      </div>
-                      <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/25" disabled={loading}>
-                          {loading && <svg className="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
-                          Sign Up as Provider
-                      </Button>
-                  </form>
-                </TabsContent>
-            </Tabs>
+            )}
           </div>
 
           <p className="px-8 text-center text-sm text-muted-foreground">

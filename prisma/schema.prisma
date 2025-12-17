@@ -12,7 +12,7 @@ model User {
   name                 String
   email                String        @unique
   password             String?
-  image                String?  
+  image                String?
   role                 Role
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
@@ -113,16 +113,16 @@ model Reminder {
 }
 
 model Notification {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   customerId      String
   appointmentId   String?
   message         String
-  type            String   @default("REMINDER")
-  isRead          Boolean  @default(false)
+  type            String    @default("REMINDER")
+  isRead          Boolean   @default(false)
   appointmentTime DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -136,4 +136,12 @@ enum AppointmentStatus {
   COMPLETED
   CANCELED
   NO_SHOW
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
 }

@@ -50,9 +50,7 @@ export default function BookingPage() {
             const fetchStaff = async () => {
                 setLoading(true);
                 try {
-                    // Assuming API endpoint: /api/services/:serviceId/staff 
-                    // OR /api/staff?serviceId=:serviceId
-                    const data = await api.get(`/api/staff?serviceId=${selectedService.id}`);
+                    const data = await api.get(`/api/staff?businessId=${businessId}&serviceId=${selectedService.id}`);
                     setStaffList(data);
                 } catch (error) {
                     console.error("Failed to fetch staff", error);
@@ -147,14 +145,22 @@ export default function BookingPage() {
                                     selected={selectedStaff === null}
                                     onSelect={() => setSelectedStaff(null)}
                                 />
-                                {loading ? <Loader2 className="animate-spin" /> : staffList.map(s => (
-                                    <StaffCard 
-                                        key={s.id} 
-                                        staff={s} 
-                                        selected={selectedStaff?.id === s.id}
-                                        onSelect={() => setSelectedStaff(s)}
-                                    />
-                                ))}
+                                {loading ? (
+                                    <Loader2 className="animate-spin" />
+                                ) : staffList.length > 0 ? (
+                                    staffList.map(s => (
+                                        <StaffCard 
+                                            key={s.id} 
+                                            staff={s} 
+                                            selected={selectedStaff?.id === s.id}
+                                            onSelect={() => setSelectedStaff(s)}
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground col-span-full text-center py-4">
+                                        No specific staff members assigned to this service.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     )}

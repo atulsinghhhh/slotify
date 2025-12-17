@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function StaffProfile() {
   const { status } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -26,7 +28,9 @@ export default function StaffProfile() {
         const response = await api.get("/api/staff/me");
         setName(response.name || "");
         setEmail(response.email || "");
-        setPhone(response.workingHours || ""); // Wait, original code mapped phone to response.workingHours? That's a bug in original code (lines 29). I'll presume key is phone or just clean it up.
+        // Clean up the phone/workingHours ambiguity, presuming response has phone/image
+        setPhone(response.phone || ""); 
+        setImage(response.image || "");
       } catch (error) {
         console.error("Failed to fetch profile:", error);
         toast.error("Failed to load profile");
@@ -49,6 +53,7 @@ export default function StaffProfile() {
       await api.patch("/api/staff/me", {
         name: name.trim(),
         phone: phone.trim(),
+        image: image,
       });
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -86,6 +91,16 @@ export default function StaffProfile() {
                <CardTitle>Personal Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+               <div className="flex flex-col gap-4">
+                  <Label>Profile Photo</Label>
+                  <ImageUpload 
+                      value={image ? [image] : []}
+                      disabled={saving}
+                      onChange={(url) => setImage(url)}
+                      onRemove={() => setImage("")}
+                  />
+               </div>
+
                <div className="grid gap-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input

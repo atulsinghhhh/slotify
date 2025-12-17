@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Calendar, CheckCircle, Clock } from "lucide-react";
-import { StatusBadge, Status } from "@/components/StatusBadge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { AppointmentStatus as Status } from "@/lib/appointment-statuses";
+
+import { useSession } from "next-auth/react";
 
 export default function ProviderDashboard() {
+  const { data: session } = useSession();
   const [appointments, setAppointments] = useState<Array<{ id: string; date: string; status: string; service?: { name: string }; customer?: { name: string }; startTime: string }>>([]);
   const [stats, setStats] = useState({ today: 0, pending: 0, completed: 0 });
 
@@ -33,6 +37,13 @@ export default function ProviderDashboard() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Welcome back, {session?.user?.name?.split(" ")[0]}</h2>
+            <p className="text-muted-foreground">Here&apos;s an overview of your business today.</p>
+          </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover:border-primary/50 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -87,7 +98,13 @@ export default function ProviderDashboard() {
            </Card>
         ) : (
            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-             {appointments.slice(0, 5).map(apt => (
+             {appointments.filter(a => a.date && a.date.startsWith(new Date().toISOString().split("T")[0])).length === 0 ? (
+                <div className="col-span-full text-center text-muted-foreground py-8">No appointments scheduled for today.</div>
+             ) : (
+                appointments
+                  .filter(a => a.date && a.date.startsWith(new Date().toISOString().split("T")[0]))
+                  .slice(0, 5)
+                  .map(apt => (
                 <Card key={apt.id} className="group hover:shadow-md transition-all border-l-4 border-l-primary/50">
                     <CardHeader className="pb-3">
                         <div className="flex justify-between items-start">
@@ -108,7 +125,8 @@ export default function ProviderDashboard() {
                         </div>
                     </CardContent>
                 </Card>
-             ))}
+             ))
+             )}
            </div>
         )}
       </div>
