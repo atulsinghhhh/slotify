@@ -16,11 +16,13 @@ export default function ProviderAppointmentsPage() {
 
   const fetchAppointments = async () => {
     try {
-      const data = await api.get("/api/appointment"); // As per prompt: GET /api/appointments
-      console.log("Fetched appointments:", data.appointments);
-      setAppointments(data.appointments || []);
-    } catch {
-      // Error silently handled
+      const data = await api.get("/api/appointment");
+      console.log("Fetched appointments:", data);
+      // API returns array directly, not wrapped
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to fetch appointments:", error);
+      toast.error("Failed to load appointments");
     } finally {
       setLoading(false);
     }
@@ -77,14 +79,14 @@ export default function ProviderAppointmentsPage() {
                                 value={apt.status}
                                 onValueChange={(value) => handleStatusUpdate(apt.id, value)}
                             >
-                                <SelectTrigger className="w-[140px]">
+                                <SelectTrigger className="w-35">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="PENDING">Pending</SelectItem>
-                                    <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                                    <SelectItem value="BOOKED">Booked</SelectItem>
                                     <SelectItem value="COMPLETED">Completed</SelectItem>
-                                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                                    <SelectItem value="CANCELED">Canceled</SelectItem>
+                                    <SelectItem value="NO_SHOW">No Show</SelectItem>
                                 </SelectContent>
                             </Select>
                         </TableCell>

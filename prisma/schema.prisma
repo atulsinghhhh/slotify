@@ -69,15 +69,16 @@ model Service {
 }
 
 model Customer {
-  id           String        @id @default(uuid())
-  name         String
-  email        String
-  phone        String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  password     String?
-  role         Role          @default(staff)
-  appointments Appointment[]
+  id            String         @id @default(uuid())
+  name          String
+  email         String
+  phone         String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  password      String?
+  role          Role           @default(staff)
+  appointments  Appointment[]
+  notifications Notification[]
 }
 
 model Appointment {
@@ -107,6 +108,19 @@ model Reminder {
   type          String
   sentAt        DateTime    @default(now())
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Notification {
+  id              String   @id @default(uuid())
+  customerId      String
+  appointmentId   String?
+  message         String
+  type            String   @default("REMINDER")
+  isRead          Boolean  @default(false)
+  appointmentTime DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

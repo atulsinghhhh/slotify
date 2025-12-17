@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { VALID_STATUSES } from "@/lib/appointment-statuses";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ appointmentId: string }> }) {
     try {
@@ -17,6 +18,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         const { status } = await request.json();
         if (!status) {
             return NextResponse.json({ message: "Status is required" }, { status: 400 });
+        }
+
+        // Validate status against enum
+        if (!VALID_STATUSES.includes(status)) {
+            return NextResponse.json(
+                { message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+                { status: 400 }
+            );
         }
 
         // Verify the appointment belongs to the provider's business

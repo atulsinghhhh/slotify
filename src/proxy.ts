@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function proxy(request: NextRequest) {
+const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+
+export async function proxy(request: NextRequest) {
   // Define public paths that don't need auth
   const publicPaths = [
     "/",
@@ -14,6 +17,7 @@ export function proxy(request: NextRequest) {
       request.nextUrl.pathname.startsWith("/business") || 
       request.nextUrl.pathname.startsWith("/testpublic") ||
       request.nextUrl.pathname.startsWith("/api") || // Allow all API for now to avoid blocking fetch logic
+      request.nextUrl.pathname.startsWith("/book") || 
       request.nextUrl.pathname.startsWith("/_next") || 
       request.nextUrl.pathname.includes("favicon.ico");
 
@@ -22,15 +26,55 @@ export function proxy(request: NextRequest) {
   }
 
   // Check for auth token (supports various naming conventions)
-  const token = request.cookies.get("authjs.session-token") || 
-                request.cookies.get("__Secure-authjs.session-token") || 
-                request.cookies.get("next-auth.session-token");
+  let token;
+  try {
+    token = await getToken({ 
+      req: request, 
+      secret: secret || ""
+    });
+  } catch (error) {
+    // If token verification fails, continue to check cookie-based auth
+    token = null;
+  }
 
-  // If no token and trying to access protected route, redirect to login
+  // Fallback: Check for auth token in cookies if getToken fails
   if (!token) {
-     const url = request.nextUrl.clone();
-     url.pathname = "/login";
-     return NextResponse.redirect(url);
+    const cookieToken = request.cookies.get("authjs.session-token") || 
+                        request.cookies.get("__Secure-authjs.session-token") || 
+                        request.cookies.get("next-auth.session-token");
+    
+    if (!cookieToken) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+    // Token exists in cookie, allow access for basic auth check
+    return NextResponse.next();
+  }
+
+  // Role-based routing: prevent providers from accessing customer pages
+  const customerOnlyPaths = ["/profile", "/appointments", "/notifications"];
+  const providerOnlyPaths = ["/provider", "/staff"];
+  
+  const isCustomerPath = customerOnlyPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+  const isProviderPath = providerOnlyPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  // If provider tries to access customer pages, redirect to provider dashboard
+  if (token.role === "provider" && isCustomerPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/provider/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  // If customer tries to access provider pages, redirect to home
+  if (token.role === "customer" && isProviderPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
   
   return NextResponse.next();

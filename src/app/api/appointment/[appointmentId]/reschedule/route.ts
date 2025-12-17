@@ -25,9 +25,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({message: "Missing required fields"}, {status: 400});
         }
 
+        // Convert incoming date (YYYY-MM-DD) and time (HH:mm) into Date objects.
+        const dateOnly = new Date(`${date}T00:00:00`);
+        const startDateTime = new Date(`${date}T${startTime}:00`);
+
+        if (Number.isNaN(dateOnly.getTime()) || Number.isNaN(startDateTime.getTime())) {
+            return NextResponse.json({ message: "Invalid date or time format" }, { status: 400 });
+        }
+
         const updatedAppointment = await prisma.appointment.update({
             where: { id: appointmentId },
-            data: { date, startTime }
+            data: { date: dateOnly, startTime: startDateTime }
         });
         // ToDO: Add notification logic here & added checks availability
         return NextResponse.json(updatedAppointment, {status: 200});

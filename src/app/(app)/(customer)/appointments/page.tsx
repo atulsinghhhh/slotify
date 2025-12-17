@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { StatusBadge, Status } from "@/components/StatusBadge";
+import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
+import { APPOINTMENT_STATUSES, AppointmentStatus } from "@/lib/appointment-statuses";
 
 interface Appointment {
   id: string;
@@ -19,7 +20,7 @@ interface Appointment {
   business: { name: string };
   date: string;
   startTime: string;
-  status: Status;
+  status: AppointmentStatus;
 }
 
 export default function AppointmentsPage() {
@@ -70,9 +71,10 @@ export default function AppointmentsPage() {
       return;
     }
     try {
+      // Send plain date and time; API will convert to DateTime
       await api.put(`/api/appointment/${selectedAppointment}/reschedule`, {
         date: newDate,
-        startTime: newTime
+        startTime: newTime,
       });
       toast.success("Appointment rescheduled");
       setRescheduleDialog(false);
@@ -113,7 +115,7 @@ export default function AppointmentsPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
-                 {apt.status === "PENDING" || apt.status === "CONFIRMED" ? (
+                 {apt.status === APPOINTMENT_STATUSES.BOOKED ? (
                    <>
                      <Button variant="outline" onClick={() => openRescheduleDialog(apt)}>Reschedule</Button>
                      <Button variant="destructive" onClick={() => handleCancel(apt.id)}>Cancel</Button>

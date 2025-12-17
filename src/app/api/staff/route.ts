@@ -71,7 +71,8 @@ export async function GET(request: NextRequest) {
         );
         }
 
-        await auth(); 
+        // Note: Allow public access for booking flow (customers don't need auth)
+        // Only validate session for other operations if needed
 
         // Build filter
         const where: Record<string, unknown> = {};
@@ -91,7 +92,6 @@ export async function GET(request: NextRequest) {
                 select: {
                     name: true,
                     email: true,
-                    // image: true
                 }
             }
         }
@@ -104,7 +104,6 @@ export async function GET(request: NextRequest) {
             id: staffObj.id,
             name: staffObj.user.name,
             email: staffObj.user.email,
-            // image: s.user.image,
             workingHours: staffObj.workingHours
         }});
 

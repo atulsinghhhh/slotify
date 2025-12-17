@@ -125,14 +125,29 @@ export async function GET(){
 
         const appointments = await prisma.appointment.findMany({
             where: { providerId: session.user.id },
+            include: {
+                customer: {
+                    select: { id: true, name: true, email: true }
+                },
+                service: {
+                    select: { id: true, name: true }
+                },
+                staff: {
+                    select: { id: true, user: { select: { name: true } } }
+                }
+            },
             orderBy: { date: "asc" }
         });
-        if(!appointments){
-            return NextResponse.json({message: "No appointments found"}, {status: 404});
-        }
-        return NextResponse.json(appointments, {status: 200});
+        
+        // Map staff data to flatten the structure
+        const formattedAppointments = appointments.map(apt => ({
+            ...apt,
+            staff: apt.staff ? { name: apt.staff.user.name } : null
+        }));
+        
+        return NextResponse.json(formattedAppointments, {status: 200});
     } catch (error) {
         console.error("Error fetching appointments:", error);
         return NextResponse.json({message: "Internal Server Error"}, {status: 500});
     }
-}
+  }
