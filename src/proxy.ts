@@ -32,7 +32,7 @@ export async function proxy(request: NextRequest) {
       req: request, 
       secret: secret || ""
     });
-  } catch (error) {
+  } catch {
     // If token verification fails, continue to check cookie-based auth
     token = null;
   }
@@ -54,12 +54,16 @@ export async function proxy(request: NextRequest) {
 
   // Role-based routing: prevent providers from accessing customer pages
   const customerOnlyPaths = ["/profile", "/appointments", "/notifications"];
-  const providerOnlyPaths = ["/provider", "/staff"];
+  const providerOnlyPaths = ["/provider"];
+  const staffOnlyPaths = ["/staff"];
   
   const isCustomerPath = customerOnlyPaths.some(path => 
     request.nextUrl.pathname.startsWith(path)
   );
   const isProviderPath = providerOnlyPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+  const isStaffPath = staffOnlyPaths.some(path => 
     request.nextUrl.pathname.startsWith(path)
   );
 
@@ -74,6 +78,20 @@ export async function proxy(request: NextRequest) {
   if (token.role === "customer" && isProviderPath) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
+  // If customer tries to access staff pages, redirect to home
+  if (token.role === "customer" && isStaffPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
+  // If provider or customer tries to access staff pages, redirect appropriately
+  if (token.role !== "staff" && isStaffPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = token.role === "provider" ? "/provider/dashboard" : "/";
     return NextResponse.redirect(url);
   }
   

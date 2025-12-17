@@ -29,7 +29,7 @@ export default function NotificationsPage() {
     }
 
     fetchNotifications();
-  }, [session, status, router, page]);
+  }, [session, status, router, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchNotifications = async () => {
     try {
@@ -110,7 +110,7 @@ export default function NotificationsPage() {
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold">No notifications yet</h3>
                 <p className="text-muted-foreground">
-                  You'll see appointment reminders and booking updates here
+                  You&apos;ll see appointment reminders and booking updates here
                 </p>
               </div>
             </div>

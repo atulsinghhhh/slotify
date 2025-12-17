@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { StatusBadge, Status } from "@/components/StatusBadge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Check } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
 export default function ProviderAppointmentsPage() {

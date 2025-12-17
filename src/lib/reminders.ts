@@ -130,7 +130,7 @@ async function sendReminder(
  */
 function logReminder(
   reminderType: ReminderType,
-  appointment: any,
+  appointment: { startTime: Date; customer: { name: string; email: string }; service: { name: string } },
   reminderId: string
 ): void {
   const timeString = appointment.startTime.toLocaleString();

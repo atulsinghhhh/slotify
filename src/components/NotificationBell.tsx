@@ -48,7 +48,7 @@ export function NotificationBell() {
     if (session?.user?.role === "customer") {
       fetchNotifications();
     }
-  }, [session?.user]);
+  }, [session?.user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll for new notifications every 60 seconds
   useEffect(() => {
@@ -59,7 +59,7 @@ export function NotificationBell() {
     }, 60000); // 60 seconds
 
     return () => clearInterval(interval);
-  }, [session?.user]);
+  }, [session?.user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mark notification as read
   const handleMarkAsRead = async (notificationId: string) => {

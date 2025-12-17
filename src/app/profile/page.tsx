@@ -36,7 +36,7 @@ export default function ProfilePage() {
         }
 
         fetchProfile();
-    }, [session, status, router]);
+    }, [session, status, router]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchProfile = async () => {
         try {

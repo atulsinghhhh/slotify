@@ -26,7 +26,6 @@ export default function ProviderDashboard() {
         setStats({ today: todayCount, pending: pendingCount, completed: completedCount });
       } catch (error) {
         console.error("Failed to fetch provider appointments", error);
-        // Mock data for demo
         setAppointments([]);
       }
     };
