@@ -95,24 +95,27 @@ export default function StaffAvailability() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-3xl space-y-4">
-        <Skeleton className="h-8 w-32" />
-        {[...Array(7)].map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full" />
+      <div className="max-w-4xl space-y-4 animate-pulse">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-20 bg-muted/50 rounded-xl" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Availability</h1>
+    <div className="max-w-4xl space-y-6 animate-in fade-in duration-500 pb-12">
+      <div className="flex items-center justify-between">
+          <div className="space-y-1">
+             <h2 className="text-xl font-semibold">Weekly Schedule</h2>
+             <p className="text-sm text-muted-foreground">Manage your working hours and availability.</p>
+          </div>
+          <Button onClick={handleSave} disabled={saving} className="min-w-[120px]">
+            {saving ? "Saving..." : "Save Changes"}
+          </Button>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Weekly Working Hours</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <div className="space-y-3">
           {days.map((day) => {
             const schedule = workingHours[day];
             const isClosed = !schedule;
@@ -120,57 +123,67 @@ export default function StaffAvailability() {
             return (
               <div
                 key={day}
-                className="flex items-center gap-4 p-4 border rounded-lg"
+                className={`flex flex-col md:flex-row md:items-center gap-4 p-5 rounded-xl border transition-all duration-200 ${
+                    isClosed 
+                    ? "bg-muted/10 border-transparent opacity-70 hover:opacity-100" 
+                    : "bg-card border-border/50 shadow-sm hover:border-primary/20"
+                }`}
               >
-                <div className="w-24 font-medium capitalize">{day}</div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="flex items-center gap-3 min-w-[160px]">
+                   <Checkbox
                     checked={!isClosed}
                     onCheckedChange={() => toggleDay(day)}
+                    className="h-5 w-5"
                   />
-                  <span className="text-sm text-muted-foreground">Open</span>
+                  <span className="font-medium capitalize text-lg">{day}</span>
                 </div>
 
-                {!isClosed ? (
-                  <div className="flex gap-4 flex-1">
-                    <div>
-                      <Label className="text-xs">Start</Label>
-                      <Input
-                        type="time"
-                        value={schedule?.start || "09:00"}
-                        onChange={(e) =>
-                          updateDayTime(day, "start", e.target.value)
-                        }
-                        className="h-8"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">End</Label>
-                      <Input
-                        type="time"
-                        value={schedule?.end || "17:00"}
-                        onChange={(e) =>
-                          updateDayTime(day, "end", e.target.value)
-                        }
-                        className="h-8"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex-1 text-sm text-muted-foreground">
-                    Closed
-                  </div>
-                )}
+                <div className="flex-1 flex gap-4 items-center">
+                    {!isClosed ? (
+                      <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="grid gap-1.5 flex-1 md:flex-none">
+                          <Label className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Start</Label>
+                          <div className="relative">
+                             <Input
+                                type="time"
+                                value={schedule?.start || "09:00"}
+                                onChange={(e) =>
+                                  updateDayTime(day, "start", e.target.value)
+                                }
+                                className="w-full md:w-32 bg-background/50 border-input"
+                              />
+                          </div>
+                        </div>
+                        <span className="text-muted-foreground mt-6 hidden md:block">→</span>
+                        <div className="grid gap-1.5 flex-1 md:flex-none">
+                          <Label className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">End</Label>
+                          <Input
+                            type="time"
+                            value={schedule?.end || "17:00"}
+                            onChange={(e) =>
+                              updateDayTime(day, "end", e.target.value)
+                            }
+                            className="w-full md:w-32 bg-background/50 border-input"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex h-16 items-center px-4 rounded-lg bg-muted/20 text-muted-foreground text-sm italic w-full">
+                        Not available
+                      </div>
+                    )}
+                </div>
               </div>
             );
           })}
-
-          <Button onClick={handleSave} disabled={saving} className="w-full">
-            {saving ? "Saving..." : "Save Schedule"}
-          </Button>
-        </CardContent>
-      </Card>
+      </div>
+      
+      <div className="flex justify-end md:hidden">
+         <Button onClick={handleSave} disabled={saving} className="w-full">
+            {saving ? "Saving..." : "Save Changes"}
+         </Button>
+      </div>
     </div>
   );
 }
+

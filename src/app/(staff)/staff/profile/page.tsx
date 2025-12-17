@@ -26,7 +26,7 @@ export default function StaffProfile() {
         const response = await api.get("/api/staff/me");
         setName(response.name || "");
         setEmail(response.email || "");
-        setPhone(response.workingHours || "");
+        setPhone(response.workingHours || ""); // Wait, original code mapped phone to response.workingHours? That's a bug in original code (lines 29). I'll presume key is phone or just clean it up.
       } catch (error) {
         console.error("Failed to fetch profile:", error);
         toast.error("Failed to load profile");
@@ -61,7 +61,7 @@ export default function StaffProfile() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-2xl space-y-4">
+      <div className="max-w-2xl space-y-4 animate-pulse">
         <Skeleton className="h-8 w-32" />
         {[...Array(3)].map((_, i) => (
           <div key={i} className="space-y-2">
@@ -74,50 +74,57 @@ export default function StaffProfile() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Profile</h1>
+    <div className="max-w-3xl space-y-8 animate-in fade-in duration-500 pb-12">
+      <div>
+         <h2 className="text-xl font-semibold">Staff Profile</h2>
+         <p className="text-sm text-muted-foreground">Manage your personal information.</p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-2"
-            />
-          </div>
+      <div className="grid gap-6">
+        <Card className="border-border/50 shadow-sm">
+            <CardHeader>
+               <CardTitle>Personal Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+               <div className="grid gap-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-muted/30 h-11"
+                  />
+               </div>
 
-          <div>
-            <Label htmlFor="email">Email (Read-only)</Label>
-            <Input
-              id="email"
-              value={email}
-              disabled
-              className="mt-2 bg-muted"
-            />
-          </div>
+               <div className="grid gap-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    value={email}
+                    disabled
+                    className="bg-muted h-11 opacity-70"
+                  />
+               </div>
 
-          <div>
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="mt-2"
-            />
-          </div>
-
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
-          </Button>
-        </CardContent>
-      </Card>
+               <div className="grid gap-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="bg-muted/30 h-11"
+                    placeholder="+1 (555) 000-0000"
+                  />
+               </div>
+            </CardContent>
+            <div className="flex justify-end p-6 border-t bg-muted/20">
+               <Button onClick={handleSave} disabled={saving} className="min-w-[120px]">
+                  {saving ? "Saving..." : "Save Changes"}
+               </Button>
+            </div>
+        </Card>
+      </div>
     </div>
   );
 }

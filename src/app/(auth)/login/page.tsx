@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { signIn, getSession } from "next-auth/react";
 
@@ -52,13 +51,16 @@ export default function LoginPage() {
         
         toast.success("Logged in successfully");
         
-        if (user.role === "provider") { // or "provider" - checking both cases or normalizing
+        if (user.role === "provider") { 
            router.push("/provider/dashboard");
-        } else {
-           router.push("/");
+        } 
+        else if (user.role === "staff") {
+           router.push("/staff/dashboard");
+        }
+        else {
+           router.push("/business");
         }
       } else {
-        // Fallback if session fetch fails but login worked (rare)
         router.push("/");
       }
 
@@ -70,68 +72,88 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/" }); // Google usually defaults to customer or existing user. 
-    // Ideally duplicate the role check in a client-side effect if needed, but callbackUrl is simpler.
+    signIn("google", { callbackUrl: "/" }); 
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] bg-muted/20">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Login to your Slotify account</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
-            <GoogleIcon className="mr-2 h-4 w-4" />
-            Sign in with Google
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-            </div>
+    <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] bg-background">
+      <div className="w-full max-w-sm space-y-6 animate-in slide-in-from-bottom-8 duration-500 p-8">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">
+                Enter your email to sign in to your account
+            </p>
           </div>
 
-          <form onSubmit={handleCredentialsLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+          <div className="grid gap-6">
+            <Button variant="outline" className="h-11 border-border/50 hover:bg-muted/50 transition-colors" onClick={handleGoogleLogin}>
+                <GoogleIcon className="mr-2 h-4 w-4" />
+                Continue with Google
             </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary hover:underline">
-              Sign up
-            </Link>
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                </div>
+            </div>
+
+            <form onSubmit={handleCredentialsLogin}>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        placeholder="name@example.com"
+                        type="email"
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        autoCorrect="off"
+                        disabled={loading}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="h-11 bg-muted/30 border-border/50"
+                      />
+                  </div>
+                  <div className="grid gap-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password">Password</Label>
+                        <Link href="#" className="ml-auto text-sm text-primary hover:underline">
+                            Forgot password?
+                        </Link>
+                      </div>
+                      <Input
+                        id="password"
+                        type="password"
+                        disabled={loading}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="h-11 bg-muted/30 border-border/50"
+                      />
+                  </div>
+                  <Button type="submit" disabled={loading} className="h-11 shadow-lg shadow-primary/25">
+                      {loading && (
+                        <svg className="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      )}
+                      Sign In with Email
+                  </Button>
+                </div>
+            </form>
           </div>
-        </CardFooter>
-      </Card>
+
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            <Link href="/signup" className="hover:text-primary underline underline-offset-4">
+                Don&apos;t have an account? Sign Up
+            </Link>
+          </p>
+      </div>
     </div>
   );
 }

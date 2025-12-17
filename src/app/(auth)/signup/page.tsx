@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
@@ -32,17 +31,9 @@ export default function SignupPage() {
     password: "",
   });
 
-  // Handle Signup (Create User via API then Login logic)
-  // Assuming Backend endpoint /api/signup supports { ...data, role: "CUSTOMER" | "PROVIDER" }
-  // OR we use separate endpoints. 
-  // Codebase had `Mongoose Pre-Save Error` in previous conversations, implying Mongoose/MongoDB or Prisma?
-  // Current package.json has Prisma.
-  // I will use a generic signup endpoint and pass Role.
-
   const handleSignup = async (role: "customer" | "provider") => {
     setLoading(true);
     try {
-      // Use different endpoints based on role
       const endpoint = role === "customer" ? "/api/customer" : "/api/signup";
       
       await api.post(endpoint, { ...formData }); 
@@ -56,12 +47,10 @@ export default function SignupPage() {
       });
 
       if (res?.ok) {
-           // Fetch session to double check role if needed, or just redirect based on signup role
-           // Since we just created it, we know the role.
            if (role === "provider") {
                router.push("/provider/dashboard");
            } else {
-               router.push("/");
+               router.push("/business");
            }
       } else {
            router.push("/login"); // Fallback
@@ -75,81 +64,86 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] bg-muted/20">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>Join Slotify today</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="customer" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="customer">Customer</TabsTrigger>
-              <TabsTrigger value="provider">Provider</TabsTrigger>
-            </TabsList>
-            
-            {/* GOOGLE SIGN UP (Common for both? Or separate?) */}
-            {/* Usually Google sign up defaults to a specific role or checks DB. */}
-            <Button variant="outline" className="w-full mb-4" onClick={() => signIn("google")}>
-                 <GoogleIcon className="mr-2 h-4 w-4" />
-                 Sign up with Google
-            </Button>
+    <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] bg-background">
+      <div className="w-full max-w-sm space-y-6 animate-in slide-in-from-bottom-8 duration-500 p-8">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+            <p className="text-sm text-muted-foreground">
+                Enter your details below to create your account
+            </p>
+          </div>
 
-            <div className="relative mb-4">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
+          <div className="grid gap-6">
+            <Tabs defaultValue="customer" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-muted/30">
+                  <TabsTrigger value="customer" className="h-9 rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Customer</TabsTrigger>
+                  <TabsTrigger value="provider" className="h-9 rounded-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Provider</TabsTrigger>
+                </TabsList>
+
+                <Button variant="outline" className="w-full h-11 relative mb-6 border-border/50 hover:bg-muted/50" onClick={() => signIn("google")}>
+                  <GoogleIcon className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </Button>
+
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border/50" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or with email</span>
+                  </div>
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or with email</span>
-                </div>
-            </div>
 
-            <TabsContent value="customer">
-               <form onSubmit={(e) => { e.preventDefault(); handleSignup("customer"); }} className="space-y-4">
-                 <div className="space-y-2">
-                   <Label>Full Name</Label>
-                   <Input placeholder="John Doe" required onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                 </div>
-                 <div className="space-y-2">
-                   <Label>Email</Label>
-                   <Input type="email" placeholder="m@example.com" required onChange={(e) => setFormData({...formData, email: e.target.value})} />
-                 </div>
-                 <div className="space-y-2">
-                   <Label>Password</Label>
-                   <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} />
-                 </div>
-                 <Button type="submit" className="w-full" disabled={loading}>{loading ? "Creating..." : "Sign Up as Customer"}</Button>
-               </form>
-            </TabsContent>
+                <TabsContent value="customer" className="mt-0 space-y-4">
+                  <form onSubmit={(e) => { e.preventDefault(); handleSignup("customer"); }} className="space-y-4">
+                      <div className="grid gap-2">
+                          <Label>Full Name</Label>
+                          <Input required onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="John Doe" />
+                      </div>
+                      <div className="grid gap-2">
+                          <Label>Email</Label>
+                          <Input type="email" required onChange={(e) => setFormData({...formData, email: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="m@example.com" />
+                      </div>
+                      <div className="grid gap-2">
+                          <Label>Password</Label>
+                          <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} className="h-11 bg-muted/30 border-border/50" />
+                      </div>
+                      <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/25" disabled={loading}>
+                          {loading && <svg className="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
+                          Sign Up as Customer
+                      </Button>
+                  </form>
+                </TabsContent>
 
-            <TabsContent value="provider">
-               <form onSubmit={(e) => { e.preventDefault(); handleSignup("provider"); }} className="space-y-4">
-                 <div className="space-y-2">
-                   <Label>Full Name</Label>
-                   <Input placeholder="Jane Smith" required onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                 </div>
-                 <div className="space-y-2">
-                   <Label>Email</Label>
-                   <Input type="email" placeholder="pro@business.com" required onChange={(e) => setFormData({...formData, email: e.target.value})} />
-                 </div>
-                 <div className="space-y-2">
-                   <Label>Password</Label>
-                   <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} />
-                 </div>
-                 <Button type="submit" className="w-full" disabled={loading}>{loading ? "Creating..." : "Sign Up as Provider"}</Button>
-               </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-            <div className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline">
-                Login
-              </Link>
-            </div>
-        </CardFooter>
-      </Card>
+                <TabsContent value="provider" className="mt-0 space-y-4">
+                  <form onSubmit={(e) => { e.preventDefault(); handleSignup("provider"); }} className="space-y-4">
+                      <div className="grid gap-2">
+                          <Label>Full Name</Label>
+                          <Input required onChange={(e) => setFormData({...formData, name: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="Jane Smith" />
+                      </div>
+                      <div className="grid gap-2">
+                          <Label>Email</Label>
+                          <Input type="email" required onChange={(e) => setFormData({...formData, email: e.target.value})} className="h-11 bg-muted/30 border-border/50" placeholder="pro@business.com" />
+                      </div>
+                      <div className="grid gap-2">
+                          <Label>Password</Label>
+                          <Input type="password" required onChange={(e) => setFormData({...formData, password: e.target.value})} className="h-11 bg-muted/30 border-border/50" />
+                      </div>
+                      <Button type="submit" className="w-full h-11 shadow-lg shadow-primary/25" disabled={loading}>
+                          {loading && <svg className="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
+                          Sign Up as Provider
+                      </Button>
+                  </form>
+                </TabsContent>
+            </Tabs>
+          </div>
+
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            <Link href="/login" className="hover:text-primary underline underline-offset-4">
+                Already have an account? Sign In
+            </Link>
+          </p>
+      </div>
     </div>
   );
 }

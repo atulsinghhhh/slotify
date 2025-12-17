@@ -12,6 +12,7 @@ model User {
   name                 String
   email                String        @unique
   password             String?
+  image                String?  
   role                 Role
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
@@ -73,6 +74,7 @@ model Customer {
   name          String
   email         String
   phone         String
+  image         String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   password      String?

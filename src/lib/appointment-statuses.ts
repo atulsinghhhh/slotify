@@ -15,11 +15,12 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
   NO_SHOW: "No Show",
 };
 
+// Updated colors for dark theme premium look
 export const STATUS_COLORS: Record<AppointmentStatus, string> = {
-  BOOKED: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELED: "bg-red-100 text-red-800",
-  NO_SHOW: "bg-yellow-100 text-yellow-800",
+  BOOKED: "bg-blue-500/15 text-blue-400 border border-blue-500/20",
+  COMPLETED: "bg-green-500/15 text-green-400 border border-green-500/20",
+  CANCELED: "bg-red-500/15 text-red-400 border border-red-500/20",
+  NO_SHOW: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
 };
 
 export const VALID_STATUSES = Object.values(APPOINTMENT_STATUSES);

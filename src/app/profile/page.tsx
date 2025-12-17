@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { Loader2, User, Mail, Phone, Save } from "lucide-react";
 
+// ... imports kept same or updated ...
 export default function ProfilePage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -81,24 +82,31 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-            <div className="flex items-center gap-3 mb-6">
-                <User className="h-8 w-8 text-primary" />
-                <h1 className="text-3xl font-bold">My Profile</h1>
+        <div className="container mx-auto px-4 py-8 max-w-2xl animate-in fade-in duration-500">
+            <div className="flex items-center gap-4 mb-8">
+                 <div className="h-16 w-16 rounded-full bg-linear-to-br from-primary to-accent p-[2px]">
+                   <div className="h-full w-full rounded-full bg-background flex items-center justify-center overflow-hidden">
+                      <User className="h-8 w-8 text-primary" />
+                   </div>
+                 </div>
+                 <div>
+                    <h1 className="text-3xl font-bold">My Profile</h1>
+                    <p className="text-muted-foreground">Manage your account settings</p>
+                 </div>
             </div>
 
-            <Card>
+            <Card className="border-border/50 shadow-lg">
                 <CardHeader>
-                    <CardTitle>Profile Information</CardTitle>
+                    <CardTitle>Personal Information</CardTitle>
                     <CardDescription>
                         Update your personal information below
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSave}>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
+                    <CardContent className="space-y-6">
+                        <div className="grid gap-2">
+                            <Label htmlFor="name" className="flex items-center gap-2 font-medium">
+                                <User className="h-4 w-4 text-primary" />
                                 Name
                             </Label>
                             <Input
@@ -106,13 +114,14 @@ export default function ProfilePage() {
                                 value={profile.name}
                                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                                 placeholder="Enter your name"
+                                className="h-11 bg-muted/20"
                                 required
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="flex items-center gap-2">
-                                <Mail className="h-4 w-4" />
+                        <div className="grid gap-2">
+                            <Label htmlFor="email" className="flex items-center gap-2 font-medium">
+                                <Mail className="h-4 w-4 text-primary" />
                                 Email
                             </Label>
                             <Input
@@ -120,16 +129,16 @@ export default function ProfilePage() {
                                 type="email"
                                 value={profile.email}
                                 disabled
-                                className="bg-muted cursor-not-allowed"
+                                className="h-11 bg-muted opacity-70 cursor-not-allowed"
                             />
                             <p className="text-xs text-muted-foreground">
                                 Email cannot be changed
                             </p>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="phone" className="flex items-center gap-2">
-                                <Phone className="h-4 w-4" />
+                        <div className="grid gap-2">
+                            <Label htmlFor="phone" className="flex items-center gap-2 font-medium">
+                                <Phone className="h-4 w-4 text-primary" />
                                 Phone Number
                             </Label>
                             <Input
@@ -138,18 +147,19 @@ export default function ProfilePage() {
                                 value={profile.phone}
                                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                                 placeholder="Enter your phone number"
+                                className="h-11 bg-muted/20"
                             />
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
+                    <CardFooter className="flex justify-between border-t bg-muted/20 p-6">
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="ghost"
                             onClick={() => router.back()}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={saving}>
+                        <Button type="submit" disabled={saving} className="bg-primary shadow-lg shadow-primary/25">
                             {saving ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

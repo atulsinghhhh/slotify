@@ -1,4 +1,5 @@
 import { StaffSidebar } from "@/components/StaffSidebar";
+import { DashboardHeader } from "@/components/DashboardHeader";
 
 export default function StaffLayout({
   children,
@@ -6,11 +7,16 @@ export default function StaffLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen bg-background text-foreground">
       <StaffSidebar />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <DashboardHeader />
+        <main className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="mx-auto max-w-6xl w-full">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
