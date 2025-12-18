@@ -14,6 +14,11 @@ export async function GET() {
       select: { id: true }
     });
 
+    console.log("Staff profile lookup:", { 
+      userId: session.user.id, 
+      staffProfile 
+    });
+
     if (!staffProfile) {
       return NextResponse.json({ message: "Staff profile not found" }, { status: 404 });
     }
@@ -32,6 +37,12 @@ export async function GET() {
         }
       },
       orderBy: { startTime: "asc" }
+    });
+
+    console.log("Fetched appointments for staff:", {
+      staffId: staffProfile.id,
+      count: appointments.length,
+      appointmentIds: appointments.map(a => ({ id: a.id, staffId: a.staffId }))
     });
 
     return NextResponse.json({ appointments }, { status: 200 });

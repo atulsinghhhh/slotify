@@ -23,9 +23,7 @@ export function Navbar() {
   const loading = status === "loading";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Hide on dashboard layouts that have their own sidebar/header
   if (pathname.startsWith("/provider") || pathname.startsWith("/staff") || pathname.startsWith("/user")) return null;
-  // Hide on auth pages (split layout)
   if (pathname === "/login" || pathname === "/signup") return null;
 
   const getInitials = (name?: string | null) => {
@@ -53,10 +51,12 @@ export function Navbar() {
            </span>
         </Link>
         
-        {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
           {session?.user ? (
             <>
+              <Link href={"/business"}>
+                <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/5">Business</Button>
+              </Link>
               <Link href="/appointments">
                 <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/5">My Appointments</Button>
               </Link>
@@ -154,6 +154,7 @@ export function Navbar() {
                </>
              ) : (
                 <>
+                  <Link href="/business" className="text-slate-400 hover:text-white">Business</Link>
                   <Link href="/appointments" className="text-slate-400 hover:text-white">My Appointments</Link>
                   <button onClick={handleLogout} className="text-left text-red-400">Log out</button>
                 </>

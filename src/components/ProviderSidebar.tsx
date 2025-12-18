@@ -13,6 +13,7 @@ const items = [
   { name: "Services", href: "/provider/services", icon: Briefcase },
   { name: "Staff", href: "/user", icon: Users },
   { name: "Appointments", href: "/provider/appointments", icon: Calendar },
+  { name: "Profile", href: "/provider/profile", icon: Users },
   // { name: "Settings", href: "/provider/settings", icon: Settings },
 ];
 

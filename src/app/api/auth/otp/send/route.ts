@@ -7,15 +7,13 @@ export async function POST(req: NextRequest) {
     try {
         const { email } = await req.json();
 
-        // 1. Check if email already exists
         const existingUser = await prisma.user.findUnique({
-             where: { email }
+            where: { email }
         });
         
 
-        // 2. Generate OTP
         const token = crypto.randomInt(100000, 999999).toString();
-        const expires = new Date(new Date().getTime() + 10 * 60 * 1000); // 10 minutes
+        const expires = new Date(new Date().getTime() + 10 * 60 * 1000); 
 
 
         await prisma.verificationToken.create({
@@ -26,7 +24,6 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        // 4. Send Email
         await sendVerificationEmail(email, token);
 
         return NextResponse.json({ message: "OTP sent" }, { status: 200 });

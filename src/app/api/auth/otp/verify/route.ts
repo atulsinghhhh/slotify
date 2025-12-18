@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Invalid or expired OTP" }, { status: 400 });
         }
 
-        // Cleanup used token
         await prisma.verificationToken.delete({
             where: {
                 identifier_token: {

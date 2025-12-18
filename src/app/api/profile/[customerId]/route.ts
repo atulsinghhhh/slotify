@@ -2,14 +2,15 @@ import { NextResponse,NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function GET( {Params}: {Params: Promise<{customerId: string}>} ) {
+export async function GET( request: NextRequest, { params }: { params: Promise<{customerId: string}> } ) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "customer"){
             return NextResponse.json({message: "Unauthorized"}, {status: 401});
         }
 
-        const { customerId } = await Params;
+        const { customerId } = await params;
+        console.log("Customer ID from Params: ", customerId);
         if(customerId !== session.user.id){
             return NextResponse.json({message: "Forbidden"}, {status: 403});
         }
@@ -24,14 +25,14 @@ export async function GET( {Params}: {Params: Promise<{customerId: string}>} ) {
     }
 }
 
-export async function PUT(request: NextRequest, {Params}: {Params: Promise<{customerId: string}>}) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{customerId: string}> }) {
     try {
         const session = await auth();
         if(!session?.user || session.user.role !== "customer"){
             return NextResponse.json({message: "Unauthorized"}, {status: 401});
         }
 
-        const { customerId } = await Params;
+        const { customerId } = await params;
         if(customerId !== session.user.id){
             return NextResponse.json({message: "Forbidden"}, {status: 403});
         }

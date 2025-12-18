@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import { Loader2, User, Mail, Phone, Save } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
 
-// ... imports kept same ...
 export default function ProfilePage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -39,7 +38,7 @@ export default function ProfilePage() {
         }
 
         fetchProfile();
-    }, [session, status, router]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [session, status, router]); 
 
     const fetchProfile = async () => {
         try {
@@ -88,15 +87,15 @@ export default function ProfilePage() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-2xl animate-in fade-in duration-500">
             <div className="flex items-center gap-4 mb-8">
-                 <div className="h-16 w-16 rounded-full bg-linear-to-br from-primary to-accent p-[2px]">
-                   <div className="h-full w-full rounded-full bg-background flex items-center justify-center overflow-hidden">
-                      <User className="h-8 w-8 text-primary" />
-                   </div>
-                 </div>
-                 <div>
+                    <div className="h-16 w-16 rounded-full bg-linear-to-br from-primary to-accent p-[2px]">
+                        <div className="h-full w-full rounded-full bg-background flex items-center justify-center overflow-hidden">
+                            <User className="h-8 w-8 text-primary" />
+                        </div>
+                    </div>
+                <div>
                     <h1 className="text-3xl font-bold">My Profile</h1>
                     <p className="text-muted-foreground">Manage your account settings</p>
-                 </div>
+                </div>
             </div>
 
             <Card className="border-border/50 shadow-lg">
